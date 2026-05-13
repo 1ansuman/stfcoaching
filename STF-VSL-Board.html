@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STF Fat Loss System — VSL Board</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0C0B0F;--bg2:#16151A;--bg3:#1E1D24;--card:#1A1920;
+--text:#E8E6E1;--text2:#A09D95;--text3:#6B6860;
+--amber:#C8822A;--amber-light:#FAEEDA;--amber-dark:#412402;
+--coral:#D85A30;--coral-light:#FAECE7;--coral-dark:#4A1B0C;
+--teal:#1D9E75;--teal-light:#E1F5EE;--teal-dark:#04342C;
+--blue:#378ADD;--blue-light:#E6F1FB;--blue-dark:#042C53;
+--purple:#7F77DD;--purple-light:#EEEDFE;--purple-dark:#26215C;
+--green:#639922;--green-light:#EAF3DE;--green-dark:#173404;
+--pink:#D4537E;--pink-light:#FBEAF0;--pink-dark:#4B1528;
+--gray:#888780;--gray-light:#F1EFE8;--gray-dark:#2C2C2A;
+--radius:10px;--radius-lg:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;line-height:1.6}
+
+.board{padding:40px 48px 80px;max-width:1600px;margin:0 auto}
+
+/* HEADER */
+.header{text-align:center;padding:60px 0 48px;position:relative}
+.header::after{content:'';display:block;width:80px;height:3px;background:var(--amber);margin:24px auto 0;border-radius:2px}
+.header h1{font-family:'Playfair Display',serif;font-size:42px;font-weight:700;letter-spacing:-0.5px;color:var(--text)}
+.header h1 span{color:var(--amber)}
+.header p{color:var(--text2);font-size:16px;margin-top:12px;font-weight:400}
+.badge{display:inline-block;background:var(--amber);color:#000;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px}
+
+/* TIMELINE NAV */
+.timeline-nav{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;position:sticky;top:0;z-index:100;background:var(--bg);padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.timeline-nav a{color:var(--text3);font-size:12px;font-weight:500;text-decoration:none;padding:6px 14px;border-radius:20px;transition:all .2s;white-space:nowrap}
+.timeline-nav a:hover{color:var(--text);background:var(--bg3)}
+.timeline-nav a.active{color:#000;background:var(--amber);font-weight:700}
+
+/* SECTION */
+.section{margin-bottom:56px;scroll-margin-top:60px}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.section-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.section-header h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:600}
+.section-header .time{color:var(--text3);font-size:13px;margin-left:auto;white-space:nowrap;font-weight:400}
+
+/* CARDS */
+.card-grid{display:grid;gap:16px}
+.card-grid.cols-2{grid-template-columns:1fr 1fr}
+.card-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.card-grid.cols-5{grid-template-columns:repeat(5,1fr)}
+.card{background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-lg);padding:20px 22px;position:relative;transition:border-color .2s}
+.card:hover{border-color:rgba(255,255,255,0.12)}
+.card h3{font-size:15px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.card p,.card li{font-size:13px;color:var(--text2);line-height:1.65}
+.card ul{padding-left:16px;margin-top:6px}
+.card ul li{margin-bottom:4px}
+.card-tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;margin-bottom:10px;letter-spacing:0.6px;text-transform:uppercase}
+
+/* PILLAR COLORS */
+.pillar-1 .card-tag,.pillar-1 .section-num{background:var(--blue);color:#fff}
+.pillar-1 .card{border-left:3px solid var(--blue)}
+.pillar-2 .card-tag,.pillar-2 .section-num{background:var(--teal);color:#fff}
+.pillar-2 .card{border-left:3px solid var(--teal)}
+.pillar-3 .card-tag,.pillar-3 .section-num{background:var(--coral);color:#fff}
+.pillar-3 .card{border-left:3px solid var(--coral)}
+.pillar-4 .card-tag,.pillar-4 .section-num{background:var(--purple);color:#fff}
+.pillar-4 .card{border-left:3px solid var(--purple)}
+.pillar-5 .card-tag,.pillar-5 .section-num{background:var(--amber);color:#000}
+.pillar-5 .card{border-left:3px solid var(--amber)}
+
+/* SPECIAL CARDS */
+.card-script{background:var(--bg3);border:1px solid rgba(255,255,255,0.04);border-left:3px solid var(--amber)}
+.card-script p{font-style:italic;color:var(--text);font-size:14px;line-height:1.75}
+.card-script .label{font-size:10px;color:var(--amber);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+
+.card-proof{background:linear-gradient(135deg,rgba(99,153,34,0.08),rgba(29,158,117,0.06));border:1px solid rgba(99,153,34,0.2);border-radius:var(--radius-lg);padding:20px 22px}
+.card-proof h3{color:var(--green-light);font-size:14px}
+.card-proof p{font-size:13px;color:var(--text2)}
+.card-proof .proof-tag{background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:0.6px;text-transform:uppercase;display:inline-block;margin-bottom:10px}
+
+.card-mistake{background:linear-gradient(135deg,rgba(212,83,126,0.08),rgba(212,83,126,0.03));border:1px solid rgba(212,83,126,0.2);border-radius:var(--radius-lg);padding:20px 22px}
+.card-mistake h3{color:var(--pink);font-size:13px;font-weight:700}
+.card-mistake p{font-size:13px;color:var(--text2)}
+
+.card-objection{background:var(--bg3);border:1px solid rgba(255,255,255,0.04);padding:18px 20px;border-radius:var(--radius)}
+.card-objection .obj-q{font-weight:700;color:var(--text);font-size:14px;margin-bottom:6px}
+.card-objection .obj-a{font-size:13px;color:var(--text2)}
+
+/* CTA SECTION */
+.cta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.cta-card{border-radius:var(--radius-lg);padding:24px;text-align:center;position:relative}
+.cta-card.opt1,.cta-card.opt2{background:var(--bg3);border:1px solid rgba(255,255,255,0.06)}
+.cta-card.opt3{background:linear-gradient(135deg,rgba(200,130,42,0.15),rgba(200,130,42,0.05));border:2px solid var(--amber)}
+.cta-card h3{font-size:16px;margin-bottom:8px}
+.cta-card p{font-size:13px;color:var(--text2)}
+.cta-card .opt-num{font-size:28px;font-weight:700;margin-bottom:8px;display:block}
+.cta-card.opt3 .opt-num{color:var(--amber)}
+
+.guarantee-card{background:linear-gradient(135deg,rgba(99,153,34,0.1),rgba(99,153,34,0.03));border:1px solid rgba(99,153,34,0.25);border-radius:var(--radius-lg);padding:24px;text-align:center;margin-top:16px}
+.guarantee-card h3{color:var(--green-light);font-size:16px;margin-bottom:6px}
+.guarantee-card p{font-size:13px;color:var(--text2)}
+
+/* OVERVIEW PILLARS ROW */
+.pillars-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.pillar-preview{border-radius:var(--radius);padding:16px;text-align:center;position:relative;overflow:hidden}
+.pillar-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.pillar-preview .num{font-size:24px;font-weight:700;display:block;margin-bottom:4px}
+.pillar-preview h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.pillar-preview p{font-size:11px;opacity:0.7}
+
+.pp-1{background:rgba(55,138,221,0.1);color:var(--blue)}
+.pp-1::before{background:var(--blue)}
+.pp-2{background:rgba(29,158,117,0.1);color:var(--teal)}
+.pp-2::before{background:var(--teal)}
+.pp-3{background:rgba(216,90,48,0.1);color:var(--coral)}
+.pp-3::before{background:var(--coral)}
+.pp-4{background:rgba(127,119,221,0.1);color:var(--purple)}
+.pp-4::before{background:var(--purple)}
+.pp-5{background:rgba(200,130,42,0.1);color:var(--amber)}
+.pp-5::before{background:var(--amber)}
+
+/* PRODUCTION SECTION */
+.prod-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.prod-card{background:var(--bg3);border:1px solid rgba(255,255,255,0.04);border-radius:var(--radius);padding:18px 20px}
+.prod-card h4{font-size:13px;font-weight:700;color:var(--amber);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+.prod-card p,.prod-card li{font-size:13px;color:var(--text2)}
+.prod-card ul{padding-left:14px;margin-top:4px}
+.prod-card ul li{margin-bottom:3px}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);margin:40px 0}
+
+/* DIRECTION NOTE */
+.direction{background:rgba(200,130,42,0.06);border-left:2px solid var(--amber);padding:10px 16px;border-radius:0 var(--radius) var(--radius) 0;margin:12px 0;font-size:12px;color:var(--amber);font-style:italic}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 0;color:var(--text3);font-size:12px}
+.footer span{color:var(--amber)}
+
+/* YT SECTION */
+.yt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.yt-card{background:var(--bg3);border:1px solid rgba(255,255,255,0.04);border-radius:var(--radius);padding:18px 20px}
+.yt-card h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px}
+.yt-card p,.yt-card li{font-size:12px;color:var(--text2)}
+.yt-card ul{padding-left:14px;margin-top:4px}
+.yt-card ul li{margin-bottom:2px}
+.yt-card code{font-size:11px;background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;color:var(--text)}
+
+@media(max-width:900px){
+.card-grid.cols-2,.card-grid.cols-3,.card-grid.cols-5,.pillars-row,.cta-grid,.prod-grid,.yt-grid{grid-template-columns:1fr}
+.board{padding:20px 16px 60px}
+.header h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+<div class="board">
+
+<!-- HEADER -->
+<div class="header">
+<div class="badge">YouTube VSL — Free Course Format</div>
+<h1>The <span>STF</span> Fat Loss System</h1>
+<p>5-pillar protocol for busy professionals &nbsp;·&nbsp; 20–30 min runtime &nbsp;·&nbsp; @benzuckfit</p>
+</div>
+
+<!-- NAV -->
+<nav class="timeline-nav">
+<a href="#production">Production</a>
+<a href="#hook">Hook</a>
+<a href="#opportunity">Opportunity</a>
+<a href="#overview">5 Pillars</a>
+<a href="#p1">① Assessment</a>
+<a href="#p2">② Nutrition</a>
+<a href="#p3">③ Training</a>
+<a href="#p4">④ Consistency</a>
+<a href="#p5">⑤ Accountability</a>
+<a href="#objections">Objections</a>
+<a href="#reality">Reality check</a>
+<a href="#cta">CTA</a>
+<a href="#youtube">YouTube upload</a>
+</nav>
+
+<!-- PRODUCTION GUIDE -->
+<div class="section" id="production">
+<div class="section-header">
+<div class="section-num" style="background:var(--gray);color:#fff">⚙</div>
+<h2>Production guide</h2>
+</div>
+<div class="prod-grid">
+<div class="prod-card">
+<h4>Format</h4>
+<p>Screen recording of a Miro board / Google Doc with Ben's face in a webcam circle. Classic free course format. Use OBS, Loom, or QuickTime.</p>
+<p style="margin-top:8px">Alternative: Ben on camera + text overlays in editing. Or mix both.</p>
+</div>
+<div class="prod-card">
+<h4>Audio</h4>
+<p>Lav mic or AirPods. Test audio before filming the whole thing. Film in a quiet room with soft surfaces.</p>
+</div>
+<div class="prod-card">
+<h4>Editing</h4>
+<p>CapCut, iMovie, or DaVinci. Add timestamps, subscribe animation at 5 min, overlay client screenshots when referenced. Lower-third @benzuckfit.</p>
+</div>
+<div class="prod-card">
+<h4>What to gatekeep</h4>
+<p>Give away 95%. Be open on principles, science, frameworks, mindset. Hold back: exact macro calculations, programming templates, daily check-in system, real-time adjustments.</p>
+</div>
+<div class="prod-card">
+<h4>The strategy</h4>
+<p>Teach the viewer so thoroughly they think: "this guy clearly knows what he's talking about, I need him to do this for me." The viewer gets knowledge. The client gets Ben.</p>
+</div>
+<div class="prod-card">
+<h4>Framework</h4>
+<p>8-part free course VSL structure: Hook → Opportunity → Roadmap → Step-by-step → Social proof → Objections → Reality check → CTA</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PART 1: HOOK -->
+<div class="section" id="hook">
+<div class="section-header">
+<div class="section-num" style="background:var(--coral);color:#fff">1</div>
+<h2>The hook</h2>
+<span class="time">~2–3 min</span>
+</div>
+<div class="direction">On camera. First sentence stops the scroll. No intro, no logo. Bold contrarian claim. Energy = confident, like telling them something nobody else will.</div>
+
+<div class="card-grid" style="gap:14px">
+<div class="card-script">
+<div class="label">Bold opener — first 5 seconds</div>
+<p>"Most guys will try to lose fat 3, 4, 5 times and fail every single time. While the few who actually understand how it works will completely transform their body in 90 days and keep it off for the rest of their life. And here is the crazy part. They do it training less than the guys who are failing."</p>
+</div>
+
+<div class="card-grid cols-2">
+<div class="card-proof">
+<span class="proof-tag">Social proof — Diego</span>
+<h3>Diego's result (overlay screenshot here)</h3>
+<p>Diego is a working guy just like the viewer. Tried multiple coaches — all ghosted. Within the first week: energy up, brain fog gone, sleeping through the night. Within 30 days coworkers asking what he was doing differently.</p>
+</div>
+<div class="card-proof">
+<span class="proof-tag">Social proof — Mai</span>
+<h3>Mai's result (overlay screenshot here)</h3>
+<p>Went to the gym alone for a full year with zero results. Once on the right system: gained 10 lbs lean muscle in 3 months, completely changed body composition. A full year alone vs. 3 months with the right system.</p>
+</div>
+</div>
+
+<div class="card-script">
+<div class="label">Pattern interrupt</div>
+<p>"Now this is not going to be one of those 5 minute tips videos where some guy tells you to drink more water and eat less carbs and then tries to sell you a meal plan. This is a full free course. I am about to break down an entire fat loss system from start to finish. And I am not holding anything back."</p>
+</div>
+
+<div class="card-script">
+<div class="label">Call out their failed attempts</div>
+<p>"Let me guess. You have probably tried this before. Maybe you followed a program off YouTube for a few weeks and then fell off. Maybe you did a crash diet that worked for 3 weeks and then gained it all back. Maybe you even paid a coach who threw you on a cookie-cutter plan, collected your money, and disappeared."</p>
+<p style="margin-top:10px">"You are stuck in this cycle where you know what you should be doing but you cannot make it stick. Your energy is low. Your sleep is off. Every morning you look in the mirror and see a version of yourself you are not proud of. And the worst part is you are disciplined in every other area of your life."</p>
+</div>
+
+<div class="card-script">
+<div class="label">Belief shift</div>
+<p>"Here is what nobody is telling you. It is not a discipline problem. It is not a motivation problem. You do not need more motivation. You need a system. Every plan you have ever tried was built for someone else and handed to you. That is why it did not work."</p>
+</div>
+
+<div class="card-script">
+<div class="label">Promise + set expectations</div>
+<p>"My name is Ben and in this video you are going to learn the entire system. How to set up your nutrition without starving yourself. How to train in 45 minutes or less. How to stay consistent when life gets busy. And the one piece that 90 percent of guys are missing that makes everything else fall apart."</p>
+<p style="margin-top:10px">"I would grab something to take notes with because I am about to give you everything. Let us get into it."</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PART 2: OPPORTUNITY -->
+<div class="section" id="opportunity">
+<div class="section-header">
+<div class="section-num" style="background:var(--gray);color:#fff">2</div>
+<h2>The opportunity</h2>
+<span class="time">~2 min</span>
+</div>
+<div class="direction">Sell the viewer on WHY fat loss matters beyond vanity. Make them feel the weight of what they are leaving on the table.</div>
+<div class="card-grid cols-3">
+<div class="card">
+<span class="card-tag" style="background:var(--coral);color:#fff">What this is</span>
+<h3>The reality of carrying extra fat</h3>
+<p>When your body is in hold mode, effects compound. Daily energy drops. You watch yourself get softer. You feel frustrated because you know what to do but can't stick with it. Disciplined in career and finances — fitness is the one area that won't click.</p>
+</div>
+<div class="card">
+<span class="card-tag" style="background:var(--coral);color:#fff">Why now</span>
+<h3>Waiting does not reverse this</h3>
+<p>Your body's biological default is to store fat. Combined with a sedentary life, metabolism adapts to that routine. Over time, habits lock in further. The people who fix this build a protocol. The people who ignore it stay in the lose/gain cycle.</p>
+</div>
+<div class="card">
+<span class="card-tag" style="background:var(--coral);color:#fff">Who this is for</span>
+<h3>Professionals with 45 minutes</h3>
+<p>Built for people who handle their responsibilities but watch fitness fall off because they don't have 2 hours a day. The belief that you need 2 hours is exactly why you stalled.</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PART 3: 5 PILLARS OVERVIEW -->
+<div class="section" id="overview">
+<div class="section-header">
+<div class="section-num" style="background:var(--amber);color:#000">3</div>
+<h2>The 5 pillars — overview</h2>
+<span class="time">~1–2 min</span>
+</div>
+<div class="direction">Show all 5 pillars at once on screen. Ben explains: "If you execute all five, your body composition changes. If you miss one, you stall out."</div>
+<div class="pillars-row">
+<div class="pillar-preview pp-1"><span class="num">1</span><h4>Assessment</h4><p>Biological baseline</p></div>
+<div class="pillar-preview pp-2"><span class="num">2</span><h4>Nutrition</h4><p>Engineered deficit</p></div>
+<div class="pillar-preview pp-3"><span class="num">3</span><h4>Training</h4><p>45-min stimulus</p></div>
+<div class="pillar-preview pp-4"><span class="num">4</span><h4>Consistency</h4><p>Autopilot systems</p></div>
+<div class="pillar-preview pp-5"><span class="num">5</span><h4>Accountability</h4><p>Real-time adjustments</p></div>
+</div>
+<div class="card" style="text-align:center;border:1px dashed rgba(255,255,255,0.12);background:transparent">
+<p style="color:var(--text2)">Miss one pillar = plateau. &nbsp;All five = transformation.</p>
+<p style="color:var(--text3);font-size:12px;margin-top:6px">Mai had the training pillar but was missing nutrition + accountability → a full year with nothing to show.</p>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PILLAR 1: ASSESSMENT -->
+<div class="section pillar-1" id="p1">
+<div class="section-header">
+<div class="section-num">1</div>
+<h2>Assessment</h2>
+<span class="time">~2–3 min</span>
+</div>
+<div class="card-grid">
+<div class="card">
+<span class="card-tag">Pillar 1</span>
+<h3>7-day baseline tracking</h3>
+<p>Document current reality for a full 7 days before changing anything. Cannot engineer a system without knowing the starting inputs.</p>
+<ul>
+<li>Current weight (same conditions daily — after waking, before water)</li>
+<li>Exact sleep hours (sleep regulates cortisol → fat storage)</li>
+<li>Precise eating habits (record everything, change nothing yet)</li>
+<li>Real activity level (honest — not idealized)</li>
+</ul>
+</div>
+<div class="card-mistake">
+<h3>Common mistake</h3>
+<p>Lying to yourself about inputs. "I eat pretty clean" = fast food 4x/week. "I'm pretty active" = desk for 9 hours + walk to car. The plan only works if inputs are accurate.</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PILLAR 2: NUTRITION -->
+<div class="section pillar-2" id="p2">
+<div class="section-header">
+<div class="section-num">2</div>
+<h2>Nutrition</h2>
+<span class="time">~3–4 min</span>
+</div>
+<div class="card-grid">
+<div class="card">
+<span class="card-tag">Pillar 2</span>
+<h3>The engineered deficit</h3>
+<ul>
+<li>Caloric deficit: 300–500 below maintenance</li>
+<li>Protein = priority #1 (preserve lean mass in deficit)</li>
+<li>Fill remaining calories with fats + carbs based on preference</li>
+<li>Keep the foods you enjoy — no elimination diets</li>
+<li>Consistency over perfection, always</li>
+<li>Track exact macronutrient targets (not just "eating clean")</li>
+</ul>
+</div>
+<div class="card-script">
+<div class="label">Gatekeep moment</div>
+<p>"The exact macro calculations and the specific adjustments you would make week to week based on how your body is responding, that is where having a coach comes in. But the principle is what matters here. Small sustainable deficit. Protein high. Foods you enjoy. Consistency over perfection."</p>
+</div>
+<div class="card-mistake">
+<h3>Common mistake</h3>
+<p>All-or-nothing thinking. One bad meal does not ruin a week of consistency. But one bad week can ruin a month if you let it snowball. Stay in the game.</p>
+</div>
+<div class="card-proof">
+<span class="proof-tag">Social proof drop</span>
+<h3>Diego's result</h3>
+<p>Working guy, had tried multiple coaches. All put him on restrictive plans he couldn't sustain. Once on the right nutrition setup: energy up within days, brain fog gone, sleeping through the night. Coworkers noticing within 30 days. In his words: "The other coaches were just in it for the sale."</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PILLAR 3: TRAINING -->
+<div class="section pillar-3" id="p3">
+<div class="section-header">
+<div class="section-num">3</div>
+<h2>Training</h2>
+<span class="time">~2–3 min</span>
+</div>
+<div class="card-grid">
+<div class="card">
+<span class="card-tag">Pillar 3</span>
+<h3>The 45-minute stimulus</h3>
+<ul>
+<li>45 min sessions, 5 days/week</li>
+<li>Push / Pull / Legs split</li>
+<li>Compound movements as foundation</li>
+<li>Every working set to physical failure (triggers adaptation)</li>
+<li>Cardio = incline walking (supplement, not main driver)</li>
+<li>Goal: build lean muscle → more calories burned at rest</li>
+</ul>
+</div>
+<div class="card-mistake">
+<h3>Common mistake</h3>
+<p>Too much cardio, not enough weights. If you only have 45 minutes, spend 40 lifting and 5 warming up. Weights change body composition. Cardio is a tool on top.</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PILLAR 4: CONSISTENCY -->
+<div class="section pillar-4" id="p4">
+<div class="section-header">
+<div class="section-num">4</div>
+<h2>Consistency systems</h2>
+<span class="time">~2–3 min</span>
+</div>
+<div class="card-grid">
+<div class="card">
+<span class="card-tag">Pillar 4</span>
+<h3>Put the protocol on autopilot</h3>
+<ul>
+<li>Train same time every day (remove the daily decision)</li>
+<li>Meal prep same time every week</li>
+<li>Track food, workouts, weight daily</li>
+<li>Bad day ≠ skip. Bad day = 20-min backup workout</li>
+<li>50% effort beats 0% every time</li>
+<li>What gets measured gets managed</li>
+</ul>
+</div>
+<div class="card-proof">
+<span class="proof-tag">Social proof drop</span>
+<h3>Mai's result</h3>
+<p>Had the discipline to gym for a full year — just lacked a system. Once on this exact 45-min, 5-day PPL system: 10 lbs lean muscle in 3 months. Arms grew, legs filled out, stopped hiding her body. More progress in 3 months than 12 months of guessing.</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PILLAR 5: ACCOUNTABILITY -->
+<div class="section pillar-5" id="p5">
+<div class="section-header">
+<div class="section-num">5</div>
+<h2>Accountability</h2>
+<span class="time">~2 min</span>
+</div>
+<div class="direction">This is where teaching transitions into positioning the coaching. Teach the PRINCIPLE of accountability, then show that coaching IS the solution.</div>
+<div class="card-grid">
+<div class="card">
+<span class="card-tag">Pillar 5</span>
+<h3>The piece you cannot do alone</h3>
+<ul>
+<li>Information is free. Execution is not.</li>
+<li>When you hold a deficit for weeks, your body adapts → weight stalls</li>
+<li>That is a biological certainty</li>
+<li>Without a coach: you guess what to do next → plateau → quit</li>
+<li>With a coach: data stalls → protocol changes immediately</li>
+<li>Daily check-ins, real-time adjustments, someone in your corner</li>
+</ul>
+</div>
+<div class="card-script">
+<div class="label">Key line</div>
+<p>"You can find free workout splits online. A lack of information is not why people stall out. The failure point is execution and adjustment."</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- OBJECTIONS -->
+<div class="section" id="objections">
+<div class="section-header">
+<div class="section-num" style="background:var(--pink);color:#fff">6</div>
+<h2>Handle objections</h2>
+<span class="time">~2 min</span>
+</div>
+<div class="direction">On camera. Direct and empathetic. Not arguing — removing their last excuses.</div>
+<div class="card-grid cols-2">
+<div class="card-objection">
+<div class="obj-q">"I don't have time."</div>
+<div class="obj-a">45 minutes = 3% of your day. You spend more than that scrolling. It's not about having time — it's about deciding what matters.</div>
+</div>
+<div class="card-objection">
+<div class="obj-q">"I've tried before and it didn't work."</div>
+<div class="obj-a">It didn't work because the plan wasn't built for you. A generic meal plan and a PDF workout is not coaching. That's a product.</div>
+</div>
+<div class="card-objection">
+<div class="obj-q">"I can figure it out myself."</div>
+<div class="obj-a">You could, but you haven't. YouTube has everything for free. What you're missing isn't knowledge — it's someone making sure you follow through.</div>
+</div>
+<div class="card-objection">
+<div class="obj-q">"I'm not that out of shape."</div>
+<div class="obj-a">You don't need to be at rock bottom to get help. Most guys who get results are functional men who just know they're not where they want to be.</div>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- REALITY CHECK -->
+<div class="section" id="reality">
+<div class="section-header">
+<div class="section-num" style="background:var(--gray);color:#fff">7</div>
+<h2>Reality check</h2>
+<span class="time">~1–2 min</span>
+</div>
+<div class="direction">Tone shifts. Serious but not harsh. This filters out tire kickers and makes Ben more believable.</div>
+<div class="card-grid cols-2">
+<div class="card-script">
+<div class="label">The hard truth</div>
+<p>"This is not easy. Losing fat and keeping it off takes real work. It takes discipline. It takes showing up on the days you do not feel like it. There is no magic supplement. There is no 30 day fix. If anyone is telling you that, they are lying to you."</p>
+</div>
+<div class="card-script">
+<div class="label">What's on the other side</div>
+<p>"The first time you take your shirt off at the pool and feel nothing but confidence. The first time someone you haven't seen in months says you look different. The first time you wake up with energy instead of dragging yourself out of bed. That is what is on the other side."</p>
+</div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<div class="section" id="cta">
+<div class="section-header">
+<div class="section-num" style="background:var(--amber);color:#000">8</div>
+<h2>Your 3 options</h2>
+<span class="time">~2 min</span>
+</div>
+<div class="direction">On camera. Calm. Confident. No hype. 3-option framework. End clean.</div>
+<div class="cta-grid">
+<div class="cta-card opt1">
+<span class="opt-num" style="color:var(--text3)">1</span>
+<h3 style="color:var(--text3)">Do nothing</h3>
+<p>Save this video. Tell yourself you'll start next week. Nothing changes.</p>
+</div>
+<div class="cta-card opt2">
+<span class="opt-num" style="color:var(--text2)">2</span>
+<h3>Execute yourself</h3>
+<p>Calculate your own macros, program your own workouts, hold yourself accountable. Slow path. Most don't pull it off.</p>
+</div>
+<div class="cta-card opt3">
+<span class="opt-num">3</span>
+<h3 style="color:var(--amber)">Work with me</h3>
+<p>Custom plan. Daily accountability. 45-min workouts. Real food. 1-on-1 with my actual phone number. Link in description.</p>
+</div>
+</div>
+<div class="guarantee-card">
+<h3>The guarantee</h3>
+<p>Visible difference in 90 days or full refund / free coaching until you get there. 4 spots available this month.</p>
+</div>
+<div class="card-script" style="margin-top:16px;text-align:center">
+<p>"Appreciate you watching this whole thing. That tells me a lot about who you are. I will see you on the call or I will see you on Instagram. Take care."</p>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- YOUTUBE UPLOAD -->
+<div class="section" id="youtube">
+<div class="section-header">
+<div class="section-num" style="background:var(--gray);color:#fff">▶</div>
+<h2>YouTube upload details</h2>
+</div>
+<div class="yt-grid">
+<div class="yt-card">
+<h4>Title options</h4>
+<ul>
+<li>The Complete Guide to Fat Loss for Men (Full Course)</li>
+<li>How to Lose Fat and Keep It Off — Full System Breakdown</li>
+<li>Everything You Need to Know About Fat Loss (Free Course)</li>
+</ul>
+</div>
+<div class="yt-card">
+<h4>Timestamps</h4>
+<ul>
+<li>0:00 Why you need to watch this</li>
+<li>2:30 Why fat loss matters more than you think</li>
+<li>4:30 The 5-part system (overview)</li>
+<li>6:00 Step 1 — Assessment</li>
+<li>8:30 Step 2 — Nutrition</li>
+<li>12:00 Step 3 — Training</li>
+<li>15:00 Step 4 — Consistency</li>
+<li>18:00 Step 5 — Accountability</li>
+<li>20:00 Objections answered</li>
+<li>22:00 Reality check</li>
+<li>24:00 Your 3 options</li>
+</ul>
+</div>
+<div class="yt-card">
+<h4>Description (first lines)</h4>
+<p>Book a free coaching call:<br><code>https://api.leadconnectorhq.com/widget/bookings/stfcoachingcalender</code></p>
+<p style="margin-top:8px">Follow on IG: <code>instagram.com/benzuckfit</code></p>
+<p style="margin-top:4px">Diego: <code>youtu.be/sXTl-0zNxNU</code></p>
+<p>Mai: <code>youtu.be/l5tKc8XOWn4</code></p>
+</div>
+<div class="yt-card">
+<h4>Thumbnail ideas</h4>
+<ul>
+<li>Ben + Google Doc on screen. Text: "FULL FAT LOSS COURSE (FREE)" bold white on dark</li>
+<li>Split frame. Notepad w/ 5 steps + Ben pointing. Text: "THE SYSTEM" amber on black</li>
+<li>Clean. Ben mid-chest. Text: "WATCH THIS BEFORE YOU START" + smaller "(free fat loss course)"</li>
+</ul>
+<p style="margin-top:8px;font-size:11px;color:var(--text3)">Canva → YouTube Thumbnail 1280×720. 3–5 words. Big text. Face visible. "FREE" boosts CTR.</p>
+</div>
+</div>
+</div>
+
+<div class="footer">
+Built by <span>grwthmarketing</span> &nbsp;·&nbsp; STF Coaching &nbsp;·&nbsp; @benzuckfit
+</div>
+
+</div>
+
+<script>
+document.querySelectorAll('.timeline-nav a').forEach(a=>{
+a.addEventListener('click',function(){
+document.querySelectorAll('.timeline-nav a').forEach(x=>x.classList.remove('active'));
+this.classList.add('active');
+});
+});
+const obs=new IntersectionObserver(entries=>{
+entries.forEach(e=>{
+if(e.isIntersecting){
+const id=e.target.id;
+document.querySelectorAll('.timeline-nav a').forEach(a=>{
+a.classList.toggle('active',a.getAttribute('href')==='#'+id);
+});
+}
+});
+},{threshold:0.3,rootMargin:'-60px 0px -50% 0px'});
+document.querySelectorAll('.section[id]').forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
